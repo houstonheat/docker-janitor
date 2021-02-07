@@ -1,0 +1,50 @@
+project_name: docker-janitor
+release:
+  disable: true
+changelog:
+  skip: true
+builds:
+  - binary: docker-janitor
+    id: docker_janitor_linux
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - 386
+    ldflags:
+      - -s -w 
+      - -X main.version={{ .Tag }} 
+      - -X main.commit={{ .ShortCommit }} 
+      - -X main.date={{.Date}} 
+      - -X main.builtBy=Goreleaser
+    hooks:
+     post:
+       - upx "{{ .Path }}"
+  # notice that we need a separated build for the MacOS binary only:
+  - binary: docker-janitor
+    id: docker_janitor_macos
+    goos:
+      - darwin
+    goarch:
+      - amd64
+archives:
+  -
+    # ID of the nfpm config, must be unique.
+    # Defaults to "default".
+    id: docker-janitor
+    # Build IDs for the builds you want to create NFPM packages for.
+    # Defaults to all builds.
+    builds:
+      - docker_janitor_linux
+      - docker_janitor_macos
+    # Replacements for GOOS and GOARCH in the package name.
+    # Keys should be valid GOOSs or GOARCHs.
+    # Values are the respective replacements.
+    # Default is empty.
+    replacements:
+      amd64: x64
+      386: x32
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: tgz
+snapshot:
+  name_template: '{{ .Tag }}'

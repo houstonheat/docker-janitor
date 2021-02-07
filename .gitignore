@@ -1,0 +1,10 @@
+# Mac
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Artifacts
+dist/
+docker-janitor
